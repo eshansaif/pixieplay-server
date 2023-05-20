@@ -88,6 +88,8 @@ app.get("/toy/:id", async (req, res) => {
     res.send(result);
 })
 
+
+// update toy
 app.put("/toy/:id", async (req, res) => {
     const id = req.params.id;
     const filter = { _id: new ObjectId(id) };
@@ -107,6 +109,15 @@ app.put("/toy/:id", async (req, res) => {
         },
     };
     const result = await toyCollections.updateOne(filter, toy, options);
+    res.send(result);
+})
+
+// Delete toy
+app.delete("/toy/:id", async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    const query = { _id: new ObjectId(id) };
+    const result = await toyCollections.deleteOne(query);
     res.send(result);
 })
 
