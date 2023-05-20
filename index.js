@@ -9,10 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// toyAdmin
-// VkloaJcdKTFiEIdo
-
-
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.k7kswnt.mongodb.net/?retryWrites=true&w=majority`;
@@ -40,11 +36,30 @@ async function run() {
 }
 run().catch(console.dir);
 
-
+const toyCollections = client.db("toyDB").collection("toys");
 
 app.get('/', (req, res) => {
     res.send("PixiePlay server is running")
 })
+
+
+app.get("/toys", async (req, res) => {
+    const limit = parseInt(req.query.limit) || 20;
+    const cursor = toyCollections.find().limit(limit);
+    const results = await cursor.toArray();
+    res.send(results);
+})
+
+
+app.post("/toys", async (req, res) => {
+    const newToy = req.body;
+    console.log(newToy);
+    const result = await toyCollections.insertOne(newToy);
+    res.send(result);
+
+})
+
+
 
 app.listen(port, () => {
     console.log("PixiePlay server is listening on port " + port);
