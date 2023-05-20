@@ -66,7 +66,6 @@ app.post("/toys", async (req, res) => {
 // my toys by email
 app.get("/my-toys/:email", async (req, res) => {
 
-    console.log(req.params.email);
     const result = await toyCollections.find({ sellerEmail: req.params.email }).sort({ createdAt: -1 }).toArray();
     res.send(result);
 });
@@ -86,6 +85,28 @@ app.get("/toy/:id", async (req, res) => {
     const id = req.params.id;
     const query = { _id: new ObjectId(id) };
     const result = await toyCollections.findOne(query);
+    res.send(result);
+})
+
+app.put("/toy/:id", async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) };
+    const options = { upsert: true };
+    const updatedToy = req.body;
+    const toy = {
+        $set: {
+            subCategory: updatedToy.subCategory,
+            toyName: updatedToy.toyName,
+            pictureURL: updatedToy.pictureURL,
+            sellerName: updatedToy.sellerName,
+            sellerEmail: updatedToy.sellerEmail,
+            price: updatedToy.price,
+            rating: updatedToy.rating,
+            quantity: updatedToy.quantity,
+            description: updatedToy.description,
+        },
+    };
+    const result = await toyCollections.updateOne(filter, toy, options);
     res.send(result);
 })
 
