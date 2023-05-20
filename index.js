@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const app = express();
 const port = process.env.PORT || 5000;
@@ -42,21 +42,51 @@ app.get('/', (req, res) => {
     res.send("PixiePlay server is running")
 })
 
-
+// Get toy by  descending order and 20 limit
 app.get("/toys", async (req, res) => {
-    const limit = parseInt(req.query.limit) || 20;
-    const cursor = toyCollections.find().limit(limit);
+    // const limit = parseInt(req.query.limit) || 20;
+    const cursor = toyCollections.find().sort({ createdAt: -1 });
     const results = await cursor.toArray();
     res.send(results);
-})
+});
 
 
+// All toys
 app.post("/toys", async (req, res) => {
     const newToy = req.body;
+    newToy.createdAt = new Date()
     console.log(newToy);
     const result = await toyCollections.insertOne(newToy);
     res.send(result);
 
+})
+
+
+
+// my toys by email
+app.get("/my-toys/:email", async (req, res) => {
+
+    console.log(req.params.email);
+    const result = await toyCollections.find({ sellerEmail: req.params.email }).sort({ createdAt: -1 }).toArray();
+    res.send(result);
+});
+
+
+// get data by subcategory
+app.get("/toys/:subCat", async (req, res) => {
+
+    // console.log(req.params.subCat);
+    const result = await toyCollections.find({
+        subCategory: req.params.subCat
+    }).sort({ createdAt: -1 }).limit(3).toArray();
+    res.send(result);
+});
+
+app.get("/toy/:id", async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) };
+    const result = await toyCollections.findOne(query);
+    res.send(result);
 })
 
 
