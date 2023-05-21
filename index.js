@@ -125,9 +125,6 @@ app.get("/sortedToys", async (req, res) => {
     res.send(results);
 });
 
-
-
-
 app.listen(port, () => {
     console.log("PixiePlay server is listening on port " + port);
 })
