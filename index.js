@@ -61,7 +61,6 @@ app.post("/toys", async (req, res) => {
 
 // my toys by email
 app.get("/my-toys/:email", async (req, res) => {
-
     const result = await toyCollections.find({ sellerEmail: req.params.email }).sort({ createdAt: -1 }).toArray();
     res.send(result);
 });
@@ -116,6 +115,16 @@ app.delete("/toy/:id", async (req, res) => {
     const result = await toyCollections.deleteOne(query);
     res.send(result);
 })
+
+// Get toys by ascending or descending order of price
+app.get("/sortedToys", async (req, res) => {
+    const { order } = req.query;
+    const sortOrder = order === "desc" ? -1 : 1;
+    const cursor = toyCollections.find().sort({ price: sortOrder });
+    const results = await cursor.toArray();
+    res.send(results);
+});
+
 
 
 
