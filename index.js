@@ -38,9 +38,6 @@ run().catch(console.dir);
 
 const toyCollections = client.db("toyDB").collection("toys");
 
-app.get('/', (req, res) => {
-    res.send("PixiePlay server is running")
-})
 
 // Get toy by  descending order and 20 limit
 app.get("/toys", async (req, res) => {
@@ -60,7 +57,6 @@ app.post("/toys", async (req, res) => {
     res.send(result);
 
 })
-
 
 
 // my toys by email
