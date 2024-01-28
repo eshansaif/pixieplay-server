@@ -6,7 +6,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors({ origin: "*" }));
+// app.use(cors({ origin: "*" }));
 app.use(
   cors({
     origin: ["http://localhost:5174", "https://your-firebase-app.web.app"],
@@ -39,13 +39,13 @@ async function run() {
       res.send("Welcome to the Server");
     });
 
-    // Get toy by descending order and 20 limit
+    // Get toy by  descending order and 20 limit
     app.get("/toys", async (req, res) => {
+      // const limit = parseInt(req.query.limit) || 20;
       const cursor = toyCollections.find().sort({ createdAt: -1 });
       const results = await cursor.toArray();
       res.send(results);
     });
-
     // All toys
     app.post("/toys", async (req, res) => {
       const newToy = req.body;
@@ -54,7 +54,6 @@ async function run() {
       const result = await toyCollections.insertOne(newToy);
       res.send(result);
     });
-
     // my toys by email
     app.get("/my-toys/:email", async (req, res) => {
       const result = await toyCollections
@@ -63,9 +62,9 @@ async function run() {
         .toArray();
       res.send(result);
     });
-
     // get data by subcategory
     app.get("/toys/:subCat", async (req, res) => {
+      // console.log(req.params.subCat);
       const result = await toyCollections
         .find({
           subCategory: req.params.subCat,
@@ -75,9 +74,50 @@ async function run() {
         .toArray();
       res.send(result);
     });
-
-    // ... (Define other routes similarly)
-
+    app.get("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollections.findOne(query);
+      res.send(result);
+    });
+    // update toy
+    app.put("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedToy = req.body;
+      const toy = {
+        $set: {
+          subCategory: updatedToy.subCategory,
+          toyName: updatedToy.toyName,
+          pictureURL: updatedToy.pictureURL,
+          sellerName: updatedToy.sellerName,
+          sellerEmail: updatedToy.sellerEmail,
+          price: updatedToy.price,
+          rating: updatedToy.rating,
+          quantity: updatedToy.quantity,
+          description: updatedToy.description,
+        },
+      };
+      const result = await toyCollections.updateOne(filter, toy, options);
+      res.send(result);
+    });
+    // Delete toy
+    app.delete("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollections.deleteOne(query);
+      res.send(result);
+    });
+    // Get toys by ascending or descending order of price
+    app.get("/sortedToys", async (req, res) => {
+      const { order } = req.query;
+      const sortOrder = order === "desc" ? -1 : 1;
+      const cursor = toyCollections.find().sort({ price: sortOrder });
+      const results = await cursor.toArray();
+      res.send(results);
+    });
     app.listen(port, () => {
       console.log(`Server is running at http://localhost:${port}/`);
     });
