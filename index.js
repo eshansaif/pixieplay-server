@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 // app.use(cors({ origin: "*" }));
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://your-firebase-app.web.app"],
+    origin: ["http://localhost:5173", "https://pixieplay-e4ac8.web.app"],
   })
 );
 app.use(express.json());
