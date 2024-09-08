@@ -9,13 +9,13 @@ const port = process.env.PORT || 5000;
 // app.use(cors({ origin: "*" }));
 app.use(
   cors({
-    origin: ["http://localhost:5174", "https://your-firebase-app.web.app"],
+    origin: ["http://localhost:5173", "https://your-firebase-app.web.app"],
   })
 );
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.k7kswnt.mongodb.net/?retryWrites=true&w=majority`;
-
+// const uri = `mongodb+srv://toyAdmin:toyAdmin123@cluster0.k7kswnt.mongodb.net/?retryWrites=true&w=majority`;
+const uri = process.env.DB_URL;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
